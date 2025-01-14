@@ -1,7 +1,15 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
+import { useForm } from "@inertiajs/react";
+import { Transition } from "@headlessui/react";
 
 export default function Document({ auth, documents }) {
+    const { delete: destroy, recentlySuccessful } = useForm();
+
+    const handleDeleteDocument = (e, id) => {
+        e.preventDefault();
+        destroy(`/document/${id}`);
+    };
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -25,6 +33,17 @@ export default function Document({ auth, documents }) {
                             </button>
                         </Link>
                         <div className="p-6 text-gray-900 dark:text-gray-100 flex flex-col">
+                            <Transition
+                                show={recentlySuccessful}
+                                enter="transition ease-in-out"
+                                enterFrom="opacity-0"
+                                leave="transition ease-in-out"
+                                leaveTo="opacity-0"
+                            >
+                                <p className="text-sm text-green-600 dark:text-green-400">
+                                    Document deleted.
+                                </p>
+                            </Transition>
                             {documents &&
                                 documents.map((document) => (
                                     <div
@@ -62,6 +81,56 @@ export default function Document({ auth, documents }) {
                                                 />
                                             </svg>
                                         </Link>
+                                        <Link
+                                            href={route("document.edit", {
+                                                document: document,
+                                            })}
+                                            className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                        >
+                                            Edit document
+                                            <svg
+                                                className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+                                                aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 14 10"
+                                            >
+                                                <path
+                                                    stroke="currentColor"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M1 5h12m0 0L9 1m4 4L9 9"
+                                                />
+                                            </svg>
+                                        </Link>
+                                        <button
+                                            type="submit"
+                                            onClick={(e) =>
+                                                handleDeleteDocument(
+                                                    e,
+                                                    document.id
+                                                )
+                                            }
+                                            className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                                        >
+                                            Delete document
+                                            <svg
+                                                className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+                                                aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 14 10"
+                                            >
+                                                <path
+                                                    stroke="currentColor"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M1 5h12m0 0L9 1m4 4L9 9"
+                                                />
+                                            </svg>
+                                        </button>
                                     </div>
                                 ))}
                         </div>

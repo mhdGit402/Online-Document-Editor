@@ -24,7 +24,7 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        return inertia('Document/create');
+        return inertia('Document/Create');
     }
 
     /**
@@ -32,7 +32,7 @@ class DocumentController extends Controller
      */
     public function store(StoreDocumentRequest $request)
     {
-        //
+        Document::create($request->validated());
     }
 
     /**
@@ -40,7 +40,7 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        return $document;
+        return inertia('Document/View', ['document' => $document]);
     }
 
     /**
@@ -48,7 +48,7 @@ class DocumentController extends Controller
      */
     public function edit(Document $document)
     {
-        //
+        return inertia('Document/Edit', ['document' => $document]);
     }
 
     /**
@@ -56,7 +56,7 @@ class DocumentController extends Controller
      */
     public function update(UpdateDocumentRequest $request, Document $document)
     {
-        //
+        $document->update($request->validated());
     }
 
     /**
@@ -64,6 +64,6 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
-        //
+        $document->delete();
     }
 }

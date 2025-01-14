@@ -7,24 +7,17 @@ import TextInput from "@/Components/TextInput";
 import { useForm } from "@inertiajs/react";
 import { Transition } from "@headlessui/react";
 
-export default function CreateDocument({ auth }) {
-    const {
-        data,
-        setData,
-        post,
-        processing,
-        errors,
-        recentlySuccessful,
-        reset,
-    } = useForm({
-        title: "",
-        description: "",
-        user_id: auth.user.id,
-    });
+export default function CreateDocument({ auth, document }) {
+    const { data, setData, put, processing, errors, recentlySuccessful } =
+        useForm({
+            title: document.title,
+            description: document.description,
+            user_id: document.user_id,
+        });
 
     function submit(e) {
         e.preventDefault();
-        post("/document", {
+        put(`/document/${document.id}`, {
             preserveScroll: true,
             onSuccess: () => reset(),
         });
@@ -35,11 +28,11 @@ export default function CreateDocument({ auth }) {
             user={auth.user}
             header={
                 <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Create Document
+                    Update Document
                 </h2>
             }
         >
-            <Head title="Create Document" />
+            <Head title="Update Document" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -79,7 +72,7 @@ export default function CreateDocument({ auth }) {
                             disabled={processing}
                             className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-500 hover:border-blue-600 hover:text-blue-600 focus:outline-none focus:border-blue-600 focus:text-blue-600 disabled:opacity-50 disabled:pointer-events-none dark:border-white dark:text-white dark:hover:text-blue-500 dark:hover:border-blue-600 dark:focus:text-blue-500 dark:focus:border-blue-600"
                         >
-                            Save Document
+                            Update Document
                         </button>
                         <Transition
                             show={recentlySuccessful}
@@ -89,7 +82,7 @@ export default function CreateDocument({ auth }) {
                             leaveTo="opacity-0"
                         >
                             <p className="text-sm text-green-600 dark:text-green-400">
-                                Document created.
+                                Document updated.
                             </p>
                         </Transition>
                     </div>
