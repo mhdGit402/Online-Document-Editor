@@ -6,6 +6,10 @@ use App\Models\Document;
 use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Crypt;
+use AshAllenDesign\ShortURL\Facades\ShortURL;
+use AshAllenDesign\ShortURL\Models\ShortURL as ShortURLModel;
+use Illuminate\Support\Facades\DB;
 
 class DocumentController extends Controller
 {
@@ -32,7 +36,26 @@ class DocumentController extends Controller
      */
     public function store(StoreDocumentRequest $request)
     {
-        Document::create($request->validated());
+        // Start a database transaction
+        $document = DB::transaction(function () use ($request) {
+            // Create the document with validated data
+            $document = Document::create($request->validated());
+
+            // Generate the shareable URL dynamically
+            $shareableUrl = $this->generateShareLink($document->id);
+
+            // Append the shareable URL value to the document during creation
+            $document->share_url = $shareableUrl;
+
+            // Save the document with the appended share_url
+            $document->save();
+
+            // Return the document instance
+            return $document;
+        });
+
+        // Redirect to the document show page after transaction
+        return redirect()->route('document.show', ['document' => $document->id])->with('document', $document);
     }
 
     /**
@@ -41,6 +64,42 @@ class DocumentController extends Controller
     public function show(Document $document)
     {
         return inertia('Document/View', ['document' => $document]);
+    }
+
+    protected function generateShareLink($documentID)
+    {
+        // Generate the encrypted payload
+        $payload = [
+            'document_id' => $documentID,
+        ];
+        $encryptedLink = Crypt::encrypt(json_encode($payload));
+
+        // Create the destination URL
+        $fullUrl = url('/share/' . $encryptedLink);
+
+        // Create a shortened URL
+        $shortURLObject = ShortURL::destinationUrl($fullUrl)->make();
+
+        // Retrieve the shortened URL
+        return $shortURLObject->default_short_url;
+    }
+
+    public function share($shortUrlKey)
+    {
+
+        $shortURL = ShortURLModel::findByKey($shortUrlKey);
+
+        $encryptedURL = $shortURL->destination_url;
+
+        $encryptedLink = basename(parse_url($encryptedURL, PHP_URL_PATH));
+        // return $encryptedLink;
+
+        $decryptedPayload = json_decode(Crypt::decrypt($encryptedLink), true);
+
+        // Find the document by ID
+        $document = Document::findOrFail($decryptedPayload['document_id']);
+
+        return redirect()->route('document.show', ['document' => $document->id])->with('document', $document);
     }
 
     /**

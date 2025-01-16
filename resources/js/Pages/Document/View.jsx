@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import { Editor } from "primereact/editor";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
@@ -23,6 +23,14 @@ export default function CreateDocument({ auth, document }) {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100 flex flex-col">
+                            <Link href={document.share_url}>
+                                <button
+                                    type="button"
+                                    className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-500 hover:border-blue-600 hover:text-blue-600 focus:outline-none focus:border-blue-600 focus:text-blue-600 disabled:opacity-50 disabled:pointer-events-none dark:border-white dark:text-white dark:hover:text-blue-500 dark:hover:border-blue-600 dark:focus:text-blue-500 dark:focus:border-blue-600"
+                                >
+                                    Copy link
+                                </button>
+                            </Link>
                             <div className="mt-4 mb-4">
                                 <InputLabel htmlFor="title" value="Title" />
 

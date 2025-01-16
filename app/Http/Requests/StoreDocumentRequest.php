@@ -24,6 +24,7 @@ class StoreDocumentRequest extends FormRequest
         return [
             'title' => 'required|max:255',
             'description' => 'required',
+            // 'share_url' => 'required|max:255',
             'user_id' => 'required'
         ];
     }

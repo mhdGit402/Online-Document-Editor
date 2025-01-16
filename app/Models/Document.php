@@ -12,6 +12,7 @@ class Document extends Model
     protected $fillable = [
         'title',
         'description',
+        'share_url',
         'user_id'
     ];
 
